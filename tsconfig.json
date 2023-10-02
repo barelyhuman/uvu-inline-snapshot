@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "removeComments": true,
+    "target": "esnext",
+    "declaration": true,
+    "moduleResolution": "Node16",
+    "outDir": "dist",
+    "module": "Node16",
+    "esModuleInterop": true,
+    "lib": ["esnext", "dom"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "tests"]
+}
