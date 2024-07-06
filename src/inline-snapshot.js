@@ -2,13 +2,13 @@ import { readFile, writeFile } from 'fs/promises'
 import MagicString from 'magic-string'
 import { snapshot } from 'uvu/assert'
 
-const METHOD_PARAM_GROUPING_RGX = /(inlineSnapshot)(\((.+),(.+)\))/
+const METHOD_PARAM_GROUPING_RGX = /(inlineSnapshot)(\((.+)(,(.+))?\n*?\))/
 const METHOD_NAME = 'inlineSnapshot'
 
 const fileMap = new Map()
 const mStringMap = new Map()
 
-export function inlineSnapshot (actualResult, expected) {
+export function inlineSnapshot(actualResult, expected) {
   if (!expected) {
     const stack = new Error().stack
     const stackArr = stack.split('\n')
@@ -18,7 +18,7 @@ export function inlineSnapshot (actualResult, expected) {
   return snapshot(String(actualResult), String(expected))
 }
 
-async function updateSnapshot (stackArr, actualResult) {
+async function updateSnapshot(stackArr, actualResult) {
   /** @type string[] */
   let matched
   stackArr.forEach((l, i) => {
