@@ -17,9 +17,9 @@
   "scripts": {
     "build": "tsup src/index.js --format cjs,esm --clean --dts --target=node12.22",
     "dev": "nr build -- --watch",
-    "fix": "standard --fix",
+    "fix": "prettier --write .",
     "size": "sizesnap",
-    "test": "uvu -r esm tests"
+    "test": "node ./tests/index.js"
   },
   "prettier": "@barelyhuman/prettier-config",
   "packageManager": "pnpm@8.6.2",
@@ -27,13 +27,9 @@
     "@antfu/ni": "^0.16.2",
     "@barelyhuman/prettier-config": "^1.0.0",
     "@types/node": "^16.11.7",
-    "eslint": "^8.18.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "esm": "^3.2.25",
     "prettier": "^2.7.1",
     "sizesnap": "^0.2.1",
-    "standard": "^17.1.0",
     "tsup": "^6.1.2",
     "typescript": "^4.7.4",
     "uvu": "^0.5.6"
