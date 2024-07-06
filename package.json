@@ -1,6 +1,6 @@
 {
   "name": "uvu-inline-snapshot",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "repository": "git@github.com:barelyhuman/uvu-inline-snapshot.git",
   "license": "MIT",
   "author": "Reaper <ahoy@barelyhuman.dev>",
@@ -19,6 +19,7 @@
     "dev": "nr build -- --watch",
     "fix": "prettier --write .",
     "size": "sizesnap",
+    "next": "bumpp",
     "test": "node ./tests/index.js"
   },
   "prettier": "@barelyhuman/prettier-config",
@@ -27,6 +28,7 @@
     "@antfu/ni": "^0.16.2",
     "@barelyhuman/prettier-config": "^1.0.0",
     "@types/node": "^16.11.7",
+    "bumpp": "^9.4.1",
     "esm": "^3.2.25",
     "prettier": "^2.7.1",
     "sizesnap": "^0.2.1",
