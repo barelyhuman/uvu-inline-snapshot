@@ -1,5 +1,6 @@
 {
   "name": "uvu-inline-snapshot",
+  "description": "Minimal Inline Snapshot utility for uvu/assert",
   "version": "0.0.3",
   "repository": "git@github.com:barelyhuman/uvu-inline-snapshot.git",
   "license": "MIT",
@@ -39,12 +40,19 @@
   "files": [
     "dist"
   ],
+  "keywords": [
+    "uvu",
+    "snapshot",
+    "inline",
+    "inline-snapshot"
+  ],
   "sizesnap": {
     "files": [
       "./dist/*.{js,mjs}"
     ]
   },
   "dependencies": {
+    "acorn-loose": "^8.4.0",
     "magic-string": "^0.30.4"
   },
   "peerDependencies": {

@@ -1,15 +1,17 @@
 import { readFile, writeFile } from 'fs/promises'
 import MagicString from 'magic-string'
 import { snapshot } from 'uvu/assert'
+import { parse } from 'acorn-loose'
 
-const METHOD_PARAM_GROUPING_RGX = /(inlineSnapshot)(\((.+)(,(.+))?\n*?\))/
+const METHOD_PARAM_GROUPING_RGX = /inlineSnapshot(\(\s*(.+)\s*(\)|(.+\s*\))))/
 const METHOD_NAME = 'inlineSnapshot'
 
 const fileMap = new Map()
 const mStringMap = new Map()
 
-export function inlineSnapshot(actualResult, expected) {
-  if (!expected) {
+const shouldUpdate = () => process.env.UVU_SNAPSHOTS === '1'
+export async function inlineSnapshot(actualResult, expected) {
+  if (!expected || shouldUpdate()) {
     const stack = new Error().stack
     const stackArr = stack.split('\n')
     return updateSnapshot(stackArr, actualResult)
@@ -52,6 +54,7 @@ async function updateSnapshot(stackArr, actualResult) {
     .replace('file://', '')
 
   let fileData
+  /**@type {import("magic-string").default}*/
   let mStr
 
   if (fileMap.has(sanitizedFilePath)) {
@@ -72,19 +75,88 @@ async function updateSnapshot(stackArr, actualResult) {
     if (i + 1 === +lineNumber) {
       // @ts-ignore col will always exist on the stack
       const replaceFrom = startIndex + +col
-      const matched = x.match(METHOD_PARAM_GROUPING_RGX)
+      let matched = x.match(METHOD_PARAM_GROUPING_RGX)
       if (!matched) {
+        // can be a single line partial statment
+        const tempText = lineSplits.slice(i, 10).join('\n')
+        matched = tempText.match(METHOD_PARAM_GROUPING_RGX)
+        if (!matched) {
+          break
+        }
+      }
+
+      let ast
+      try {
+        ast = parse(matched[0], {
+          ecmaVersion: 2020,
+        })
+      } catch {
+        ast = undefined
+      }
+
+      if (!ast) {
         break
       }
-      const original = matched[3]
-      mStr.update(
-        replaceFrom,
-        replaceFrom + matched[0].length,
-        `${METHOD_NAME}(${original},\`${actualResult}\`)`
-      )
+
+      /**@type {import("acorn").CallExpression|false}*/
+      let callExpression
+      if (ast.body && ast.body.length > 0) {
+        callExpression = getCallExpression(ast)
+      }
+
+      if (callExpression === false) {
+        break
+      }
+
+      const callExprStart = replaceFrom + callExpression.start
+      const callExprEnd = replaceFrom + callExpression.end
+      const args = callExpression.arguments
+      const ogArgPosition = replaceFrom + args[0].start
+      const ogArgEnd = replaceFrom + args[0].end
+      const firstArg = mStr.slice(ogArgPosition, ogArgEnd)
+
+      if (args.length === 2) {
+        const start = args[1].start
+        const end = args[1].end
+        mStr.update(
+          replaceFrom,
+          replaceFrom + start,
+          `${METHOD_NAME}(${firstArg},`
+        )
+        mStr.update(
+          replaceFrom + start,
+          replaceFrom + end,
+          `\`${actualResult}\``
+        )
+      } else if (args.length == 1) {
+        mStr.overwrite(
+          callExprStart,
+          callExprEnd,
+          `${METHOD_NAME}(${firstArg},\`${actualResult}\`)`
+        )
+      }
+
       break
     }
     startIndex += x.length + '\n'.length
   }
   await writeFile(sanitizedFilePath, mStr.toString(), 'utf8')
+}
+
+/**
+ * @param {import("acorn").Program} astProgram
+ */
+function getCallExpression(astProgram) {
+  const baseExpression = astProgram.body.find(d => {
+    return d.type == 'ExpressionStatement'
+  })
+
+  if (
+    baseExpression.type === 'ExpressionStatement' &&
+    baseExpression.expression.type === 'CallExpression'
+  ) {
+    return baseExpression.expression
+  }
+
+  return false
 }

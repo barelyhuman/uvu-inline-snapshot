@@ -9,15 +9,21 @@ const files = [
   {
     file: './basic.test.js',
     hook: ESM_HOOK,
-    expected: `import { test } from 'uvu'
-import { inlineSnapshot } from '../src/index.js'
-
-test('simple', async () => {
-  await inlineSnapshot(JSON.stringify({ a: 1 }),\`{"a":1}\`)
-})
-
-test.run()
-`,
+    expected:
+      "import { test } from 'uvu'\n" +
+      "import { inlineSnapshot } from '../src/index.js'\n" +
+      '\n' +
+      "test('simple', async () => {\n" +
+      '  await inlineSnapshot(JSON.stringify({ a: 1 }),`{"a":1}`)\n' +
+      '})\n' +
+      '\n' +
+      'const add = (a, b) => a + b\n' +
+      '\n' +
+      "test('func exec', async () => {\n" +
+      '  await inlineSnapshot(add(1, 2),`3`)\n' +
+      '})\n' +
+      '\n' +
+      'test.run()\n',
   },
 ]
 
