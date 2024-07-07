@@ -1,7 +1,7 @@
 {
   "name": "uvu-inline-snapshot",
   "description": "Minimal Inline Snapshot utility for uvu/assert",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "repository": "git@github.com:barelyhuman/uvu-inline-snapshot.git",
   "license": "MIT",
   "author": "Reaper <ahoy@barelyhuman.dev>",
