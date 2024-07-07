@@ -5,18 +5,15 @@ on:
   pull_request:
     branches: [main]
 jobs:
-  format:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.head_ref }}
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 6.32.10
       - name: Deps
-        run: pnpm install
+        run: npm install
       - name: Build
-        run: pnpm build
+        run: npm run build
       - name: Test
-        run: pnpm test
+        run: npm run test
