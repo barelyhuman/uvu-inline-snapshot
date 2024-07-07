@@ -1,31 +1,56 @@
 name: release
-
 on:
   push:
     tags:
-      - v*
+      - 'v*.*.*'
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v2
-
-      - uses: pnpm/action-setup@v2.2.2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          version: 8.6.2
+          node-version-file: .nvmrc
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: pnpm install
-
+        run: npm ci
       - name: Test
-        run: pnpm test
-
+        run: npm run test
       - name: Compile
-        run: pnpm build
+        run: npm run build
+      - name: Get Package Version
+        id: get-package-version
+        uses: stevenbenitez/get-package-version-action@v1
+      - name: Lint Package
+        run: npm run package:lint
 
       - name: Publish
         run: |
-          npm publish
+          npm publish --tag unsure
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Tag Beta
+        if: contains(steps.get-package-version.outputs.version, '-beta')
+        run: |
+          npm dist-tags add @preachjs/datepicker@${{ steps.get-package-version.outputs.version }} beta
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: PR Message
+        uses: mshick/add-pr-comment@v2
+        if: contains(steps.get-package-version.outputs.version, '-beta') && github.event_name == 'pull_request'
+        with:
+          message: |
+            Published new beta release: ${{ steps.get-package-version.outputs.version }}
+
+      - name: Tag Release
+        if: ${{ !contains(steps.get-package-version.outputs.version, '-beta') }}
+        run: |
+          npm dist-tags add @preachjs/datepicker@${{ steps.get-package-version.outputs.version }} latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
