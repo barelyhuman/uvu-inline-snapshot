@@ -4,19 +4,21 @@
   "version": "0.0.4",
   "repository": "git@github.com:barelyhuman/uvu-inline-snapshot.git",
   "license": "MIT",
+  "type": "commonjs",
   "author": "Reaper <ahoy@barelyhuman.dev>",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
     },
     "./package.json": "./package.json"
   },
   "scripts": {
     "build": "tsup src/index.js --format cjs,esm --clean --dts --target=node12.22",
+    "package:lint": "publint",
     "dev": "nr build -- --watch",
     "fix": "prettier --write .",
     "size": "sizesnap",
@@ -31,6 +33,7 @@
     "bumpp": "^9.4.1",
     "esm": "^3.2.25",
     "prettier": "^2.7.1",
+    "publint": "^0.2.8",
     "sizesnap": "^0.2.1",
     "tsup": "^6.1.2",
     "typescript": "^4.7.4",
