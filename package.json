@@ -24,7 +24,6 @@
     "test": "node ./tests/index.js"
   },
   "prettier": "@barelyhuman/prettier-config",
-  "packageManager": "pnpm@8.6.2",
   "devDependencies": {
     "@antfu/ni": "^0.16.2",
     "@barelyhuman/prettier-config": "^1.0.0",
