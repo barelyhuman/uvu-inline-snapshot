@@ -2,6 +2,9 @@
 
 > Minimal Inline Snapshot utility for uvu/assert
 
+### Limitations 
+- Not tested enough with Typescript to confirm that it works with it. 
+
 ### Installation
 
 ```sh
@@ -34,6 +37,12 @@ test('example 1', async () => {
 })
 
 test.run()
+```
+
+To update multiple snapshots, just run the tests with `UVU_SNAPSHOTS=1` 
+
+```sh
+; UVU_SNAPSHOTS=1 uvu 
 ```
 
 ## License
