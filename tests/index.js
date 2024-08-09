@@ -4,6 +4,7 @@ const { join, resolve } = require('node:path')
 const assert = require('assert/strict')
 
 const ESM_HOOK = ['-r', 'esm']
+const TS_HOOK = ['-r', 'tsx/cjs']
 
 const files = [
   {
@@ -21,6 +22,26 @@ const files = [
       '\n' +
       "test('func exec', async () => {\n" +
       '  await inlineSnapshot(add(1, 2),`3`)\n' +
+      '})\n' +
+      '\n' +
+      'test.run()\n',
+  },
+  {
+    file: './typescript.test.ts',
+    hook: TS_HOOK,
+    expected:
+      "import { test } from 'uvu'\n" +
+      "import { inlineSnapshot } from '../src/index.js'\n" +
+      '\n' +
+      "test('simple', async () => {\n" +
+      '  await inlineSnapshot(JSON.stringify({ a: 1 }),`{"a":1}`)\n' +
+      '})\n' +
+      '\n' +
+      'const add = (a: number, b: number) => a + b\n' +
+      '\n' +
+      "test('func exec', async () => {\n" +
+      '  const value: number = add(1, 2)\n' +
+      '  await inlineSnapshot(value,`3`)\n' +
       '})\n' +
       '\n' +
       'test.run()\n',
